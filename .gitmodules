@@ -1,0 +1,3 @@
+[submodule ".submodules/debloat-windows-10"]
+	path = .submodules/debloat-windows-10
+	url = https://github.com/W4RH4WK/Debloat-Windows-10

@@ -1,0 +1,1 @@
+../.submodules/debloat-windows-10/scripts/disable-services.ps1

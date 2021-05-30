@@ -1,0 +1,1 @@
+../.submodules/debloat-windows-10/scripts/disable-windows-defender.ps1
