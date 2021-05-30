@@ -104,7 +104,7 @@ $WhitelistDebloat.location       = New-Object System.Drawing.Point(275,175)
 
 $Form.controls.AddRange(@($WhitelistDebloat,$RemoveKeys,$ProtectPrivacy))
 
-$WhitelistDebloat.Add_Click({ 
+$WhitelistDebloat.Add_Click({
 Function DebloatAll {
     #Removes AppxPackages
     #Credit to /u/GavinEke for a modified version of my whitelist code
@@ -136,11 +136,11 @@ Debloatall
  Function Remove-Keys {
 
  New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
-        
+
     #These are the registry keys that it will delete.
-            
+
     $Keys = @(
-            
+
         #Remove Background Tasks
         "HKCR:\Extensions\ContractId\Windows.BackgroundTasks\PackageId\46928bounde.EclipseManager_2.2.4.51_neutral__a5h4egax66k6y"
         "HKCR:\Extensions\ContractId\Windows.BackgroundTasks\PackageId\ActiproSoftwareLLC.562882FEEB491_2.6.18.18_neutral__24pqs290vpjk0"
@@ -148,30 +148,30 @@ Debloatall
         "HKCR:\Extensions\ContractId\Windows.BackgroundTasks\PackageId\Microsoft.PPIProjection_10.0.15063.0_neutral_neutral_cw5n1h2txyewy"
         "HKCR:\Extensions\ContractId\Windows.BackgroundTasks\PackageId\Microsoft.XboxGameCallableUI_1000.15063.0.0_neutral_neutral_cw5n1h2txyewy"
         "HKCR:\Extensions\ContractId\Windows.BackgroundTasks\PackageId\Microsoft.XboxGameCallableUI_1000.16299.15.0_neutral_neutral_cw5n1h2txyewy"
-            
+
         #Windows File
         "HKCR:\Extensions\ContractId\Windows.File\PackageId\ActiproSoftwareLLC.562882FEEB491_2.6.18.18_neutral__24pqs290vpjk0"
-            
+
         #Registry keys to delete if they aren't uninstalled by RemoveAppXPackage/RemoveAppXProvisionedPackage
         "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\46928bounde.EclipseManager_2.2.4.51_neutral__a5h4egax66k6y"
         "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\ActiproSoftwareLLC.562882FEEB491_2.6.18.18_neutral__24pqs290vpjk0"
         "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\Microsoft.PPIProjection_10.0.15063.0_neutral_neutral_cw5n1h2txyewy"
         "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\Microsoft.XboxGameCallableUI_1000.15063.0.0_neutral_neutral_cw5n1h2txyewy"
         "HKCR:\Extensions\ContractId\Windows.Launch\PackageId\Microsoft.XboxGameCallableUI_1000.16299.15.0_neutral_neutral_cw5n1h2txyewy"
-            
+
         #Scheduled Tasks to delete
         "HKCR:\Extensions\ContractId\Windows.PreInstalledConfigTask\PackageId\Microsoft.MicrosoftOfficeHub_17.7909.7600.0_x64__8wekyb3d8bbwe"
-            
+
         #Windows Protocol Keys
         "HKCR:\Extensions\ContractId\Windows.Protocol\PackageId\ActiproSoftwareLLC.562882FEEB491_2.6.18.18_neutral__24pqs290vpjk0"
         "HKCR:\Extensions\ContractId\Windows.Protocol\PackageId\Microsoft.PPIProjection_10.0.15063.0_neutral_neutral_cw5n1h2txyewy"
         "HKCR:\Extensions\ContractId\Windows.Protocol\PackageId\Microsoft.XboxGameCallableUI_1000.15063.0.0_neutral_neutral_cw5n1h2txyewy"
         "HKCR:\Extensions\ContractId\Windows.Protocol\PackageId\Microsoft.XboxGameCallableUI_1000.16299.15.0_neutral_neutral_cw5n1h2txyewy"
-               
+
         #Windows Share Target
         "HKCR:\Extensions\ContractId\Windows.ShareTarget\PackageId\ActiproSoftwareLLC.562882FEEB491_2.6.18.18_neutral__24pqs290vpjk0"
     )
-        
+
     #This writes the output of each key it is removing and also removes the keys listed above.
     ForEach ($Key in $Keys) {
         Write-Verbose "Removing $Key from registry"
@@ -182,81 +182,81 @@ Remove-Keys
 })
 
 $ProtectPrivacy.Add_Click({
-Function ProtectPrivacy { 
-  
+Function ProtectPrivacy {
+
             #Creates a PSDrive to be able to access the 'HKCR' tree
             New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
-          
+
             #Disables Windows Feedback Experience
             Write-Host "Disabling Windows Feedback Experience program"
             $Advertising = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo'
             If (Test-Path $Advertising) {
                 Set-ItemProperty $Advertising Enabled -Value 0
             }
-          
+
             #Stops Cortana from being used as part of your Windows Search Function
             Write-Host "Stopping Cortana from being used as part of your Windows Search Function"
             $Search = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search'
             If (Test-Path $Search) {
                 Set-ItemProperty $Search AllowCortana -Value 0
             }
-          
+
             #Stops the Windows Feedback Experience from sending anonymous data
             Write-Host "Stopping the Windows Feedback Experience program"
             $Period1 = 'HKCU:\Software\Microsoft\Siuf'
             $Period2 = 'HKCU:\Software\Microsoft\Siuf\Rules'
             $Period3 = 'HKCU:\Software\Microsoft\Siuf\Rules\PeriodInNanoSeconds'
-            If (!(Test-Path $Period3)) { 
+            If (!(Test-Path $Period3)) {
                 mkdir $Period1
                 mkdir $Period2
                 mkdir $Period3
                 New-ItemProperty $Period3 PeriodInNanoSeconds -Value 0
             }
-                 
+
             Write-Host "Adding Registry key to prevent bloatware apps from returning"
             #Prevents bloatware applications from returning
             $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
             If (!(Test-Path $registryPath)) {
                 Mkdir $registryPath
-                New-ItemProperty $registryPath DisableWindowsConsumerFeatures -Value 1 
-            }          
-      
+                New-ItemProperty $registryPath DisableWindowsConsumerFeatures -Value 1
+            }
+
             Write-Host "Setting Mixed Reality Portal value to 0 so that you can uninstall it in Settings"
-            $Holo = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic'    
+            $Holo = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic'
             If (Test-Path $Holo) {
                 Set-ItemProperty $Holo FirstRunSucceeded -Value 0
             }
-      
+
             #Disables live tiles
             Write-Host "Disabling live tiles"
-            $Live = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications'    
+            $Live = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications'
             If (!(Test-Path $Live)) {
-                mkdir $Live  
+                mkdir $Live
                 New-ItemProperty $Live NoTileApplicationNotification -Value 1
             }
-      
+
             #Turns off Data Collection via the AllowTelemtry key by changing it to 0
             Write-Host "Turning off Data Collection"
-            $DataCollection = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection'    
+            $DataCollection = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection'
             If (Test-Path $DataCollection) {
                 Set-ItemProperty $DataCollection AllowTelemetry -Value 0
             }
-      
+
             #Disables People icon on Taskbar
             Write-Host "Disabling People icon on Taskbar"
             $People = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People'
             If (Test-Path $People) {
                 Set-ItemProperty $People PeopleBand -Value 0
             }
-  
+
             #Disables suggestions on start menu
             Write-Host "Disabling suggestions on the Start Menu"
-            $Suggestions = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager'    
+            $Suggestions = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager'
             If (Test-Path $Suggestions) {
                 Set-ItemProperty $Suggestions SystemPaneSuggestionsEnabled -Value 0
             }
-            
-            
+
+
             Write-Host "Removing CloudStore from registry if it exists"
             $CloudStore = 'HKCUSoftware\Microsoft\Windows\CurrentVersion\CloudStore'
             If (Test-Path $CloudStore) {
@@ -264,15 +264,15 @@ Function ProtectPrivacy {
                 Remove-Item $CloudStore
                 Start-Process Explorer.exe -Wait
             }
-  
+
             #Loads the registry keys/values below into the NTUSER.DAT file which prevents the apps from redownloading. Credit to a60wattfish
             reg load HKU\Default_User C:\Users\Default\NTUSER.DAT
             Set-ItemProperty -Path Registry::HKU\Default_User\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager -Name SystemPaneSuggestionsEnabled -Value 0
             Set-ItemProperty -Path Registry::HKU\Default_User\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager -Name PreInstalledAppsEnabled -Value 0
             Set-ItemProperty -Path Registry::HKU\Default_User\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager -Name OemPreInstalledAppsEnabled -Value 0
             reg unload HKU\Default_User
-      
-            #Disables scheduled tasks that are considered unnecessary 
+
+            #Disables scheduled tasks that are considered unnecessary
             Write-Host "Disabling scheduled tasks"
             #Get-ScheduledTask -TaskName XblGameSaveTaskLogon | Disable-ScheduledTask
             Get-ScheduledTask -TaskName XblGameSaveTask | Disable-ScheduledTask
@@ -284,59 +284,59 @@ Function ProtectPrivacy {
     ProtectPrivacy
 })
 
-$RevertChange.Add_Click( { 
+$RevertChange.Add_Click( {
     Function RevertChanges {
         $ErrorActionPreference = 'silentlycontinue'
         #This function will revert the changes you made when running the Start-Debloat function.
-        
+
         #This line reinstalls all of the bloatware that was removed
-        Get-AppxPackage -AllUsers | ForEach {Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"} 
-    
-        #Tells Windows to enable your advertising information.    
+        Get-AppxPackage -AllUsers | ForEach {Add-AppxPackage -Verbose -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
+
+        #Tells Windows to enable your advertising information.
         Write-Host "Re-enabling key to show advertisement information"
         $Advertising = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo"
         If (Test-Path $Advertising) {
             Set-ItemProperty $Advertising  Enabled -Value 1
         }
-            
+
         #Enables Cortana to be used as part of your Windows Search Function
         Write-Host "Re-enabling Cortana to be used in your Windows Search"
         $Search = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search"
         If (Test-Path $Search) {
-            Set-ItemProperty $Search  AllowCortana -Value 1 
+            Set-ItemProperty $Search  AllowCortana -Value 1
         }
-            
+
         #Re-enables the Windows Feedback Experience for sending anonymous data
         Write-Host "Re-enabling Windows Feedback Experience"
         $Period = "HKCU:\Software\Microsoft\Siuf\Rules"
-        If (!(Test-Path $Period)) { 
+        If (!(Test-Path $Period)) {
             New-Item $Period
         }
-        Set-ItemProperty $Period PeriodInNanoSeconds -Value 1 
-    
-        #Enables bloatware applications               
+        Set-ItemProperty $Period PeriodInNanoSeconds -Value 1
+
+        #Enables bloatware applications
         Write-Host "Adding Registry key to allow bloatware apps to return"
         $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
         If (!(Test-Path $registryPath)) {
-            New-Item $registryPath 
+            New-Item $registryPath
         }
-        Set-ItemProperty $registryPath  DisableWindowsConsumerFeatures -Value 0 
-        
+        Set-ItemProperty $registryPath  DisableWindowsConsumerFeatures -Value 0
+
         #Changes Mixed Reality Portal Key 'FirstRunSucceeded' to 1
         Write-Host "Setting Mixed Reality Portal value to 1"
         $Holo = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic"
         If (Test-Path $Holo) {
-            Set-ItemProperty $Holo  FirstRunSucceeded -Value 1 
+            Set-ItemProperty $Holo  FirstRunSucceeded -Value 1
         }
-        
+
         #Re-enables live tiles
         Write-Host "Enabling live tiles"
         $Live = "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications"
         If (!(Test-Path $Live)) {
-            New-Item $Live 
+            New-Item $Live
         }
-        Set-ItemProperty $Live  NoTileApplicationNotification -Value 0 
-       
+        Set-ItemProperty $Live  NoTileApplicationNotification -Value 0
+
         #Re-enables data collection
         Write-Host "Re-enabling data collection"
         $DataCollection = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection"
@@ -344,36 +344,36 @@ $RevertChange.Add_Click( {
             New-Item $DataCollection
         }
         Set-ItemProperty $DataCollection  AllowTelemetry -Value 1
-        
+
         #Re-enables People Icon on Taskbar
         Write-Host "Enabling People Icon on Taskbar"
         $People = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People'
         If (Test-Path $People) {
             Set-ItemProperty $People -Name PeopleBand -Value 1 -Verbose
         }
-    
+
         #Re-enables suggestions on start menu
         Write-Host "Enabling suggestions on the Start Menu"
         $Suggestions = "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
         If (!(Test-Path $Suggestions)) {
             New-Item $Suggestions
         }
-        Set-ItemProperty $Suggestions  SystemPaneSuggestionsEnabled -Value 1 
-        
+        Set-ItemProperty $Suggestions  SystemPaneSuggestionsEnabled -Value 1
+
         #Re-enables scheduled tasks that were disabled when running the Debloat switch
         Write-Host "Enabling scheduled tasks that were disabled"
-        Get-ScheduledTask XblGameSaveTaskLogon | Enable-ScheduledTask 
-        Get-ScheduledTask  XblGameSaveTask | Enable-ScheduledTask 
-        Get-ScheduledTask  Consolidator | Enable-ScheduledTask 
-        Get-ScheduledTask  UsbCeip | Enable-ScheduledTask 
-        Get-ScheduledTask  DmClient | Enable-ScheduledTask 
-        Get-ScheduledTask  DmClientOnScenarioDownload | Enable-ScheduledTask 
+        Get-ScheduledTask XblGameSaveTaskLogon | Enable-ScheduledTask
+        Get-ScheduledTask  XblGameSaveTask | Enable-ScheduledTask
+        Get-ScheduledTask  Consolidator | Enable-ScheduledTask
+        Get-ScheduledTask  UsbCeip | Enable-ScheduledTask
+        Get-ScheduledTask  DmClient | Enable-ScheduledTask
+        Get-ScheduledTask  DmClientOnScenarioDownload | Enable-ScheduledTask
 
         Write-Host "Re-enabling and starting WAP Push Service"
         #Enable and start WAP Push Service
         Set-Service "dmwappushservice" -StartupType Automatic
         Start-Service "dmwappushservice"
-    
+
         Write-Host "Re-enabling and starting the Diagnostics Tracking Service"
         #Enabling the Diagnostics Tracking Service
         Set-Service "DiagTrack" -StartupType Automatic
@@ -394,7 +394,7 @@ $RevertChange.Add_Click( {
     RevertChanges
 })
 
-$DisableCortana.Add_Click( { 
+$DisableCortana.Add_Click( {
     DisableCortana {
         $ErrorActionPreference = 'silentlycontinue'
         Write-Host "Disabling Cortana"
@@ -404,12 +404,12 @@ $DisableCortana.Add_Click( {
         If (!(Test-Path $Cortana1)) {
             New-Item $Cortana1
         }
-        Set-ItemProperty $Cortana1 AcceptedPrivacyPolicy -Value 0 
+        Set-ItemProperty $Cortana1 AcceptedPrivacyPolicy -Value 0
         If (!(Test-Path $Cortana2)) {
             New-Item $Cortana2
         }
-        Set-ItemProperty $Cortana2 RestrictImplicitTextCollection -Value 1 
-        Set-ItemProperty $Cortana2 RestrictImplicitInkCollection -Value 1 
+        Set-ItemProperty $Cortana2 RestrictImplicitTextCollection -Value 1
+        Set-ItemProperty $Cortana2 RestrictImplicitInkCollection -Value 1
         If (!(Test-Path $Cortana3)) {
             New-Item $Cortana3
         }
@@ -419,7 +419,7 @@ $DisableCortana.Add_Click( {
 DisableCortana
 })
 
-$EnableCortana.Add_Click( { 
+$EnableCortana.Add_Click( {
     EnableCortana {
         $ErrorActionPreference = 'silentlycontinue'
         Write-Host "Re-enabling Cortana"
@@ -429,16 +429,16 @@ $EnableCortana.Add_Click( {
         If (!(Test-Path $Cortana1)) {
             New-Item $Cortana1
         }
-        Set-ItemProperty $Cortana1 AcceptedPrivacyPolicy -Value 1 
+        Set-ItemProperty $Cortana1 AcceptedPrivacyPolicy -Value 1
         If (!(Test-Path $Cortana2)) {
             New-Item $Cortana2
         }
-        Set-ItemProperty $Cortana2 RestrictImplicitTextCollection -Value 0 
-        Set-ItemProperty $Cortana2 RestrictImplicitInkCollection -Value 0 
+        Set-ItemProperty $Cortana2 RestrictImplicitTextCollection -Value 0
+        Set-ItemProperty $Cortana2 RestrictImplicitInkCollection -Value 0
         If (!(Test-Path $Cortana3)) {
             New-Item $Cortana3
         }
-        Set-ItemProperty $Cortana3 HarvestContacts -Value 1 
+        Set-ItemProperty $Cortana3 HarvestContacts -Value 1
         Write-Host "Cortana has been enabled!"
      }
 EnableCortana
